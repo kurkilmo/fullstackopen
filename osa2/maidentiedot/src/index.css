@@ -1,0 +1,10 @@
+input {
+    margin-left: 0.5em;
+    margin-bottom: 1em;
+}
+
+.flag {
+    margin-top: 1em;
+    border-style: double;
+    width: 230px;
+}
