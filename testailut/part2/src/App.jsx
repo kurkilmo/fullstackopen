@@ -12,7 +12,7 @@ const Footer = () => {
   return (
     <div style={style}>
       <br />
-      <em>Muistiin pano sovellus</em>
+      <em>Muistiin pano sovellus :D</em>
     </div>
   )
 }
