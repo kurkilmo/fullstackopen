@@ -30,11 +30,10 @@ const Notification = ({ message }) => {
 }
 
 const App = (props) => {
-  const jsonUrl = 'http://localhost:3001/notes'
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('perseelleen vituiks')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const notesToShow = showAll ? notes : notes.filter(n => n.important)
 
@@ -45,7 +44,6 @@ const App = (props) => {
   }, [])
 
   const toggleImportance = (id) => {
-    const url = `${jsonUrl}/${id}`
     const prevNote = notes.find(n => n.id === id)
     const changedNote = {...prevNote, important: !prevNote.important}
 
@@ -82,7 +80,6 @@ const App = (props) => {
 
   const remove = (id) => {
     noteService.deleteNote(id).then(resp => {
-      console.log(resp);
       setNotes(notes.filter(n => n.id !== id))
     })
   }
