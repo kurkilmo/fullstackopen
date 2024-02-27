@@ -63,7 +63,7 @@ app.post('/api/notes', (req, res) => {
         important: body.important || false,
         id: genId()
     }
-
+    console.log(note)
     notes = notes.concat(note)
     res.json(note)
 })
