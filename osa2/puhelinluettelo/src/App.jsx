@@ -85,7 +85,7 @@ const App = () => {
       setPersons(persons.map(p => p.id === newPerson.id ? newPerson : p))
       displayNotification(`Changed number of ${resp.name} to ${resp.number}`)
     }).catch(error => {
-      displayNotification(`Information of ${person.name} has already been removed from server`, "red")
+      displayNotification(`${error.response.data.error}`, "red")
     })
   }
 
@@ -113,7 +113,6 @@ const App = () => {
       setNewName('')
       displayNotification(`Added ${resp.name}`, "green")
     }).catch(error => {
-      console.log(error.response.data);
       displayNotification(`${error.response.data.error}`, "red")
     })
   }
