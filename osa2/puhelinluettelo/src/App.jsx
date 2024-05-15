@@ -112,6 +112,9 @@ const App = () => {
       setNewNumber('')
       setNewName('')
       displayNotification(`Added ${resp.name}`, "green")
+    }).catch(error => {
+      console.log(error.response.data);
+      displayNotification(`${error.response.data.error}`, "red")
     })
   }
 
@@ -125,7 +128,7 @@ const App = () => {
     if (!window.confirm(prompt)) return
     numberService.remove(id).then(resp => {
       setPersons(persons.filter(p => p.id !== id))
-      displayNotification(`Removed ${resp.name}`, "green")
+      displayNotification(`Removed ${personName}`, "green")
     }).catch(error => {
       displayNotification(`Information of ${personName} has already been removed from server`, "red")
     })
