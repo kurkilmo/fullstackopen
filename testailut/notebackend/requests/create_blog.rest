@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImthbWVsaSIsImlkIjoiNjY2NDk3N2M0YmYxMjk3ZGIzMTY3ZDEwIiwiaWF0IjoxNzE3ODcxNzA4LCJleHAiOjE3MTc4NzUzMDh9.j4XZqe2rOVY8QDb_pvrLaNPHiFRP-HoShip-WUm_O58
+
+{
+  "title": "toimiiks",
+  "author": "HÄH?",
+  "url": "https://reactpatterns.com/",
+  "likes": 90
+}
