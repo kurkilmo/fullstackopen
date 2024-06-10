@@ -1,9 +1,9 @@
-/* eslint-disable react/prop-types */
+import { useEffect, useState, useRef } from 'react'
 import Note from './components/Note'
-import { useEffect, useState } from 'react'
-// import axios from "axios"
+import Login from './components/Login'
+import Togglable from './components/Togglable'
+import NoteForm from './components/NoteForm'
 import noteService from './services/notes'
-import loginService from './services/login'
 
 const Footer = () => {
   const style = {
@@ -33,131 +33,90 @@ const Notification = ({ message }) => {
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+  const noteFormRef = useRef()
 
   const notesToShow = showAll ? notes : notes.filter(n => n.important)
 
   // Datan haku serveriltä
   useEffect(() => {
     noteService.getAll()
-    .then(initNotes => setNotes(initNotes))
+      .then(initNotes => setNotes(initNotes))
+  }, [])
+
+  // Kirjautuminen local storagesta
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const loggedUser = JSON.parse(loggedUserJSON)
+      setUser(loggedUser)
+      noteService.setToken(loggedUser.token)
+    }
   }, [])
 
   const toggleImportance = (id) => {
     const prevNote = notes.find(n => n.id === id)
-    const changedNote = {...prevNote, important: !prevNote.important}
+    const changedNote = { ...prevNote, important: !prevNote.important }
 
     noteService.update(id, changedNote).then(r => {
       setNotes(notes.map(n => n.id !== id ? n : r))
     })
   }
 
-  const addNote = (event) => {
-    event.preventDefault()
-    if (newNote === '') return
-    const newNoteObject = {
-      //id: notes.length + 1,
-      content: newNote,
-      important: Math.random() < 0.5
-    }
-    noteService.create(newNoteObject).then(resp => {
-      setNotes(notes.concat(resp))
-      setNewNote('')
-    })
-  }
-
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
-  }
-  const reset = () => {
-    noteService.reset().catch(error => {
-      setErrorMessage("mikä on ku ei toimi")
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 2500)
-    })
+  const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()
+    noteService
+      .create(noteObject)
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+      })
   }
 
   const remove = (id) => {
-    noteService.deleteNote(id).then(resp => {
+    noteService.deleteNote(id).then(resp_ignored => {
       setNotes(notes.filter(n => n.id !== id))
     })
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    console.log('logging in with', username, password)
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+  const logout = () => {
+    const name = user.name
+    window.localStorage.removeItem('loggedNoteappUser')
+    setUser(null)
+    noteService.setToken('')
+    setErrorMessage(`Terve menoo ${name}`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 2500)
   }
 
   return (
     <div>
       <h1>Notes</h1>
       <Notification message={errorMessage} />
-      <div className="login">
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-              <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-              <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+      <Togglable buttonLabel='login' >
+        <Login setUser={setUser} setErrorMessage={setErrorMessage} />
+      </Togglable>
+      <Togglable buttonLabel='new note' ref={noteFormRef} >
+        <NoteForm createNote={addNote} />
+      </Togglable>
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           näytä {showAll ? 'tärkeet' : 'kaikki' }
         </button>
-      </div> 
+      </div>
       <ul>
         {notesToShow.map(note =>
           <Note
-            key={note.id} 
-            note={note} 
-            toggleImportant={() => toggleImportance(note.id)} 
+            key={note.id}
+            note={note}
+            toggleImportant={() => toggleImportance(note.id)}
             remove={() => remove(note.id)}
           />
         )}
       </ul>
-      <form onSubmit={addNote}>
-        <input
-          value={newNote}
-          onChange={handleNoteChange}
-        />
-        <button type="submit">tallentele</button>
-      </form>
-      <div><button onClick={reset}>tyhjennä</button></div>
+      <div><button onClick={logout}>Kirjaudu ulos</button></div>
       <Footer />
     </div>
   )
