@@ -50,7 +50,8 @@ export default [
         'reportUsedIgnorePattern': false,
         'varsIgnorePattern': '[iI]gnored',
         'argsIgnorePattern': '[iI]gnored'
-      }]
+      }],
+      'react/prop-types': 0
     }
   },
   pluginJs.configs.recommended,

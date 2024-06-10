@@ -23,3 +23,10 @@ h1 {
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.login {
+  margin-bottom: 1em;
+  input {
+    margin-left: 0.5em;
+  }
+}
