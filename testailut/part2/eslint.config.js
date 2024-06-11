@@ -3,13 +3,14 @@ import pluginJs from '@eslint/js'
 import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js'
 import { fixupConfigRules } from '@eslint/compat'
 import stylistic from '@stylistic/eslint-plugin'
-
+import vitestGlobals from './vitest-globals.js'
 
 export default [
-  { languageOptions: { globals: globals.browser } },
+  { languageOptions: { globals: { ...globals.browser, ...vitestGlobals } } },
   pluginJs.configs.recommended,
   { files: ['**/*.jsx'], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
   ...fixupConfigRules(pluginReactConfig),
+
   {
     plugins: {
       '@stylistic': stylistic
@@ -40,11 +41,6 @@ export default [
         'error', { 'before': true, 'after': true }
       ],
       'no-unused-vars': ['error', {
-        'vars': 'all',
-        'args': 'after-used',
-        'caughtErrors': 'all',
-        'ignoreRestSiblings': false,
-        'reportUsedIgnorePattern': false,
         'varsIgnorePattern': '[iI]gnored',
         'argsIgnorePattern': '[iI]gnored',
         'caughtErrorsIgnorePattern': '^ignore'
